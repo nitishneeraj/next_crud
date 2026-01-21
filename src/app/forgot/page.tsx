@@ -4,44 +4,46 @@ import { useState } from 'react'
 
 export default function ForgotPage() {
   const [email, setEmail] = useState('')
-  const [message, setMessage] = useState('')
+  const [msg, setMsg] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
+    setMsg('')
 
-    if (!email) {
-      setMessage('Please enter your email')
-      return
-    }
+    const res = await fetch('/api/forgot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
 
-    // TODO: Call your backend API to send reset link
-    setMessage(`If ${email} exists, a reset link has been sent.`)
+    const data = await res.json()
+    setMsg(data.message)
+    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center">Forgot Password</h1>
-
-        {message && <p className="text-green-500 mb-4">{message}</p>}
+    <div className="min-h-screen flex justify-center items-center">
+      <form onSubmit={submit} className="p-6 bg-white shadow rounded w-96">
+        <h2 className="text-xl mb-4">Forgot Password</h2>
 
         <input
           type="email"
-          placeholder="Enter your email"
-          value={email}
+          placeholder="Email"
+          className="border p-2 w-full mb-4"
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 border rounded"
+          required
         />
 
         <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white w-full p-2 rounded"
+          disabled={loading}
         >
-          Send Reset Link
+          {loading ? 'Sending...' : 'Send reset link'}
         </button>
+
+        {msg && <p className="mt-3 text-sm text-center">{msg}</p>}
       </form>
     </div>
   )
