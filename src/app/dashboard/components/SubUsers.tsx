@@ -45,7 +45,7 @@ export default function SubUsers() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Sub Users</h1>
+      <h1 className="text-2xl font-bold mb-4">Sub Users List</h1>
 
       <div className="flex gap-3 mb-6">
         <input

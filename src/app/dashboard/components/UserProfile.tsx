@@ -1,23 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function UserProfile() {
   const [form, setForm] = useState({
-    name: 'Nitish Kumar',
-    email: 'nitish@example.com',
-    phone: '9876543210',
-    role: 'Admin',
+    name: '',
+    email: '',
+    phone: '',
+    role: '',
   })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then(res => res.json())
+      .then(data => {
+        console.log('PROFILE API RESPONSE:', data) 
+        setForm(data)
+        setLoading(false)
+      })
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSave = () => {
-    alert('Profile updated successfully!')
-    // TODO: API call to save profile
+  const handleSave = async () => {
+    const res = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        name: form.name,
+        phone: form.phone,
+      }),
+    })
+
+    if (res.ok) {
+      alert('Profile updated successfully!')
+    } else {
+      alert('Update failed')
+    }
   }
+
+  if (loading) return <p>Loading profile...</p>
 
   return (
     <div className="bg-white p-6 rounded-lg shadow max-w-xl">
@@ -39,7 +64,7 @@ export default function UserProfile() {
           className="w-full p-3 border rounded bg-gray-100 cursor-not-allowed"
         />
 
-        <input
+         <input
           name="phone"
           value={form.phone}
           onChange={handleChange}
@@ -47,7 +72,7 @@ export default function UserProfile() {
           className="w-full p-3 border rounded"
         />
 
-        <input
+         <input
           name="role"
           value={form.role}
           disabled
