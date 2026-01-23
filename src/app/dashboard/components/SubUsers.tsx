@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
+import UserViewModal from './UserViewModal'
 
 
 type SubUser = {
@@ -12,6 +13,7 @@ type SubUser = {
 
 export default function SubUsers() {
   const [users, setUsers] = useState<SubUser[]>([])
+  const [selectedId, setSelectedId] = useState<number | null>(null)
   const [form, setForm] = useState({ name: '', email: '', role: '' })
 
   const [search, setSearch] = useState('')
@@ -195,7 +197,7 @@ export default function SubUsers() {
                   <Eye
                     size={18}
                     className="text-blue-600 cursor-pointer hover:scale-110"
-                    onClick={() => alert(`View ${u.name}`)}
+                    onClick={() => setSelectedId(u.id)}
                   />
                   <Pencil
                     size={18}
@@ -215,6 +217,14 @@ export default function SubUsers() {
           ))}
         </tbody>
       </table>
+
+        {/* Open Modal */}
+      {selectedId && (
+          <UserViewModal
+            userId={selectedId}
+            onClose={() => setSelectedId(null)}
+          />
+        )}
 
 
       {/* 📄 Pagination Controls */}
