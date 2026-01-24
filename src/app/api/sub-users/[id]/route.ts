@@ -89,3 +89,44 @@ export async function DELETE(
     )
   }
 }
+
+
+/* =======================
+   EDIT USER
+   ======================= */
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params
+    const userId = Number(id)
+    const { name, role } = await req.json()
+
+    if (!userId || !name || !role) {
+      return NextResponse.json(
+        { error: 'Invalid data' },
+        { status: 400 }
+      )
+    }
+
+    const [result]: any = await pool.query(
+      'UPDATE sub_users SET name = ?, role = ? WHERE id = ?',
+      [name, role, userId]
+    )
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    return NextResponse.json(
+      { error: 'Update failed' },
+      { status: 500 }
+    )
+  }
+}

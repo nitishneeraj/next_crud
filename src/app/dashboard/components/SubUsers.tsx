@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
 import UserViewModal from './UserViewModal'
+import UserEditModal from './UserEditModal'
 
 
 type SubUser = {
@@ -14,6 +15,7 @@ type SubUser = {
 export default function SubUsers() {
   const [users, setUsers] = useState<SubUser[]>([])
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [editId, setEditId] = useState<number | null>(null)
   const [form, setForm] = useState({ name: '', email: '', role: '' })
 
   const [search, setSearch] = useState('')
@@ -202,7 +204,7 @@ export default function SubUsers() {
                   <Pencil
                     size={18}
                     className="text-green-600 cursor-pointer hover:scale-110"
-                    onClick={() => alert(`Edit ${u.name}`)}
+                    onClick={() => setEditId(u.id)}
                   />
                   <Trash2
                     size={18}
@@ -218,11 +220,20 @@ export default function SubUsers() {
         </tbody>
       </table>
 
-        {/* Open Modal */}
+        {/* Open Modalb View */}
       {selectedId && (
           <UserViewModal
             userId={selectedId}
             onClose={() => setSelectedId(null)}
+          />
+        )}
+
+        {/* Open Modal Edit */}
+        {editId && (
+          <UserEditModal
+            userId={editId}
+            onClose={() => setEditId(null)}
+            onUpdated={fetchUsers}
           />
         )}
 
