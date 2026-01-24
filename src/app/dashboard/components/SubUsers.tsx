@@ -20,7 +20,7 @@ export default function SubUsers() {
 
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const pageSize = 2
+  const pageSize = 5
 
   const parent_user_id = 1
 
