@@ -18,21 +18,35 @@ export default function SubUsers() {
   const [editId, setEditId] = useState<number | null>(null)
   const [form, setForm] = useState({ name: '', email: '', role: '' })
 
-  const [search, setSearch] = useState('')
+  // const [search, setSearch] = useState('')
+  // const [page, setPage] = useState(1)
+  // const pageSize = 5
+
   const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [search, setSearch] = useState('')
   const pageSize = 5
 
   const parent_user_id = 1
 
+  // const fetchUsers = async () => {
+  //   const res = await fetch('/api/sub-users')
+  //   const data = await res.json()
+  //   setUsers(data)
+  // }
   const fetchUsers = async () => {
-    const res = await fetch('/api/sub-users')
+    const res = await fetch(
+      `/api/sub-users?page=${page}&pageSize=${pageSize}&search=${search}`
+    )
     const data = await res.json()
-    setUsers(data)
+
+    setUsers(data.users)
+    setTotal(data.total)
   }
 
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [page, search])
 
   const addUser = async () => {
     if (!form.name || !form.email || !form.role) return
@@ -60,7 +74,7 @@ export default function SubUsers() {
     console.log('🔥 Frontend ID:', id, typeof id)
     if (!confirm('Are you sure you want to delete this user?')) return
 
-    console.log('🗑 Deleting ID:', id)
+     console.log('🗑 Deleting ID:', id)
 
     try {
       const res = await fetch(`/api/sub-users/${id}`, {
@@ -68,14 +82,14 @@ export default function SubUsers() {
       })
 
       const data = await res.json()
-      console.log('📥 Delete response:', data)
+       console.log('📥 Delete response:', data)
 
       if (!res.ok) {
         alert(data.error || 'Delete failed')
         return
       }
 
-      alert('User deleted successfully ✅')
+      // alert('User deleted successfully ✅')
       fetchUsers()
     } catch (err) {
       console.error('🔥 Delete error:', err)
@@ -95,11 +109,12 @@ export default function SubUsers() {
   }, [users, search])
 
   // 📄 Pagination logic
-  const totalPages = Math.ceil(filteredUsers.length / pageSize)
-  const paginatedUsers = filteredUsers.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  )
+  // const totalPages = Math.ceil(filteredUsers.length / pageSize)
+  // const paginatedUsers = filteredUsers.slice(
+  //   (page - 1) * pageSize,
+  //   page * pageSize
+  // )
+   const totalPages = Math.ceil(total / pageSize)
 
   // Reset page on search
   useEffect(() => {
@@ -118,7 +133,11 @@ export default function SubUsers() {
           placeholder="🔍 Search name, email or role"
           className="border px-4 py-2 rounded-lg w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          // onChange={(e) => setSearch(e.target.value)}
+          onChange={e => {
+            setSearch(e.target.value)
+            setPage(1)
+          }}
         />
       </div>
 
@@ -171,7 +190,7 @@ export default function SubUsers() {
         </thead>
 
         <tbody>
-          {paginatedUsers.length === 0 && (
+          {users.length === 0 && (
             <tr>
               <td colSpan={4} className="text-center p-6 text-gray-500">
                 No records found
@@ -179,7 +198,7 @@ export default function SubUsers() {
             </tr>
           )}
 
-          {paginatedUsers.map((u, index) => (
+          {users.map((u, index) => (
             <tr
               key={u.id}
               className="hover:bg-gray-50 transition"

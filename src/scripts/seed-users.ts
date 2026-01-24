@@ -2,7 +2,7 @@ import pool from '../lib/db'
 
 async function seedUsers() {
   const batchSize = 1000
-  const total = 400000
+  const total = 1000
   const parent_user_id = 1
 
   for (let i = 0; i < total; i += batchSize) {
