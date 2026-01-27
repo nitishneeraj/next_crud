@@ -122,6 +122,12 @@ export default function SubUsers() {
     fetchUsers()
   }
 
+  //download CSV logic
+  const downloadUsersCSV = () => {
+  window.location.href = "/api/sub-users/download";
+};
+
+
 
 
 
@@ -206,29 +212,49 @@ export default function SubUsers() {
         </div>
       </div>
 
-      {/* 📤 Upload Sub Users (Excel) */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">
-          Bulk Upload (Excel)
-        </h2>
+      {/* 📤 Bulk Actions */}
+      <div className="bg-white p-6 rounded-xl shadow flex items-center justify-between gap-6">
 
-        <p className="text-sm text-gray-500 mb-4">
-          Upload an Excel file with columns: <b>name, email, role</b>
-        </p>
+        {/* Left: Upload Excel */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800 mb-1">
+            Bulk Upload (Excel)
+          </h2>
 
-        <div className="flex items-center gap-4">
-          <input
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={handleExcelUpload}
-            className="border p-2 rounded-lg w-80"
-          />
+          <p className="text-sm text-gray-500 mb-3">
+            Upload an Excel file with columns: <b>name, email, role</b>
+          </p>
 
-          <span className="text-sm text-gray-400">
-            Max 5,000 users per upload
+          <div className="flex items-center gap-4">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleExcelUpload}
+              className="border p-2 rounded-lg w-72 text-sm"
+            />
+
+            <span className="text-xs text-gray-400">
+              Max 5,000 users per upload
+            </span>
+          </div>
+        </div>
+
+        {/* Right: Download CSV */}
+        <div className="flex flex-col items-end">
+          <button
+            onClick={downloadUsersCSV}
+            className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg transition text-sm font-medium"
+          >
+            ⬇ Download All Users (CSV)
+          </button>
+
+          <span className="text-xs text-gray-400 mt-2">
+            Downloads all existing users
           </span>
         </div>
+
       </div>
+
 
 
 
