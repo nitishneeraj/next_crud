@@ -9,10 +9,12 @@ export default function DashboardPage() {
   const router = useRouter()
   const [activeMenu, setActiveMenu] = useState('home')
 
-  const handleLogout = () => {
-    // clear login session / localStorage here
+  const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' })
     router.push('/login')
   }
+
+
 
   return (
     <div className="flex">
