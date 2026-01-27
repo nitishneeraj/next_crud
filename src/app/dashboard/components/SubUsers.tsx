@@ -74,7 +74,7 @@ export default function SubUsers() {
     console.log('🔥 Frontend ID:', id, typeof id)
     if (!confirm('Are you sure you want to delete this user?')) return
 
-     console.log('🗑 Deleting ID:', id)
+    console.log('🗑 Deleting ID:', id)
 
     try {
       const res = await fetch(`/api/sub-users/${id}`, {
@@ -82,7 +82,7 @@ export default function SubUsers() {
       })
 
       const data = await res.json()
-       console.log('📥 Delete response:', data)
+      console.log('📥 Delete response:', data)
 
       if (!res.ok) {
         alert(data.error || 'Delete failed')
@@ -96,6 +96,32 @@ export default function SubUsers() {
       alert('Server error')
     }
   }
+
+
+  //excel upload logic
+  const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/sub-users/import', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      alert(data.error || 'Upload failed')
+      return
+    }
+
+    alert(`✅ ${data.inserted} users imported`)
+    fetchUsers()
+  }
+
 
 
 
@@ -114,7 +140,7 @@ export default function SubUsers() {
   //   (page - 1) * pageSize,
   //   page * pageSize
   // )
-   const totalPages = Math.ceil(total / pageSize)
+  const totalPages = Math.ceil(total / pageSize)
 
   // Reset page on search
   useEffect(() => {
@@ -143,38 +169,67 @@ export default function SubUsers() {
 
 
 
-      {/* ➕ Add User */}
-      <div className="bg-gray-50 p-4 rounded-lg mb-6">
-        <h2 className="font-medium text-gray-700 mb-3">Add Sub User</h2>
+      {/* ➕ Add Sub User */}
+      <div className="bg-white p-6 rounded-xl shadow mb-8">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          Add Sub User
+        </h2>
 
-        <div className="flex gap-3">
+        <div className="grid grid-cols-4 gap-4 items-end">
           <input
-            className="border p-2 rounded-lg w-1/4 focus:ring-2 focus:ring-blue-400 outline-none"
-            placeholder="Name"
+            className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+            placeholder="Full Name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+
           <input
-            className="border p-2 rounded-lg w-1/4 focus:ring-2 focus:ring-blue-400 outline-none"
-            placeholder="Email"
+            className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+            placeholder="Email Address"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
+
           <input
-            className="border p-2 rounded-lg w-1/4 focus:ring-2 focus:ring-blue-400 outline-none"
-            placeholder="Role"
+            className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+            placeholder="Role (Admin / User)"
             value={form.role}
             onChange={(e) => setForm({ ...form, role: e.target.value })}
           />
 
           <button
             onClick={addUser}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition font-medium"
           >
-            + Add
+            + Add User
           </button>
         </div>
       </div>
+
+      {/* 📤 Upload Sub Users (Excel) */}
+      <div className="bg-white p-6 rounded-xl shadow">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          Bulk Upload (Excel)
+        </h2>
+
+        <p className="text-sm text-gray-500 mb-4">
+          Upload an Excel file with columns: <b>name, email, role</b>
+        </p>
+
+        <div className="flex items-center gap-4">
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleExcelUpload}
+            className="border p-2 rounded-lg w-80"
+          />
+
+          <span className="text-sm text-gray-400">
+            Max 5,000 users per upload
+          </span>
+        </div>
+      </div>
+
 
 
       {/* 📋 Table */}
@@ -239,22 +294,22 @@ export default function SubUsers() {
         </tbody>
       </table>
 
-        {/* Open Modalb View */}
+      {/* Open Modalb View */}
       {selectedId && (
-          <UserViewModal
-            userId={selectedId}
-            onClose={() => setSelectedId(null)}
-          />
-        )}
+        <UserViewModal
+          userId={selectedId}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
 
-        {/* Open Modal Edit */}
-        {editId && (
-          <UserEditModal
-            userId={editId}
-            onClose={() => setEditId(null)}
-            onUpdated={fetchUsers}
-          />
-        )}
+      {/* Open Modal Edit */}
+      {editId && (
+        <UserEditModal
+          userId={editId}
+          onClose={() => setEditId(null)}
+          onUpdated={fetchUsers}
+        />
+      )}
 
 
       {/* 📄 Pagination Controls */}
