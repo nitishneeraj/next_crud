@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-  const res = NextResponse.json({ message: 'Logged out' })
-
-  // 🔥 CLEAR COOKIE PROPERLY
-  res.cookies.set('session_user', '', {
-    httpOnly: true,
-    path: '/',
-    maxAge: 0, // 👈 this deletes cookie
-  })
-
+  const res = NextResponse.redirect(new URL('/login', 'http://localhost:3000'))
+  res.cookies.delete('session_user')
   return res
 }

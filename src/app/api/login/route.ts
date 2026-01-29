@@ -38,25 +38,16 @@ export async function POST(req: Request) {
       )
     }
 
-    // ✅ Success
-    // ✅ CREATE SESSION COOKIE (SECURE VERSION)
-    const res = NextResponse.json({
-      message: 'Login successful',
-      userId: user.id,
-    })
+    // ✅ Redirect response
+    const res = NextResponse.redirect(new URL('/dashboard', req.url))
 
-    // 🔐 Set session cookie
     res.cookies.set({
       name: 'session_user',
-      value: JSON.stringify({
-        id: user.id,
-        email: user.email,
-      }),
-      httpOnly: true,                 // client JS can't read
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
-      sameSite: 'lax',                // middleware compatible
-      path: '/',                      // 🔴 MUST
-      maxAge: 60 * 60 * 24,            // 1 day
+      value: JSON.stringify({ id: user.id, email: user.email }),
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24,
     })
 
     return res
